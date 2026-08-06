@@ -2,7 +2,7 @@ import urllib.request
 import json
 from ollama import chat
 
-from tools import read_repository 
+from src.tools import read_repository 
 
 class Model:
     def __init__(self) -> None:
@@ -12,7 +12,7 @@ class Model:
         self.max_iterations: int = 10
         
 
-    def query(self, question: str) -> str:
+    def query(self, question: str) -> dict:
         self.messages = [
                     {"role": "system", "content": "You are a senior code reviewer. You must use the read_repository tool ONCE to read the codebase. After reading the code, you MUST immediately output a numeric percent score and explanation. Do not call the tool more than once."},
                     {"role": "user", "content": question}
@@ -26,7 +26,7 @@ class Model:
                     options = {"num_ctx": 16384} # the number is 16k tokens which is medium sized apparently
                 )
             except Exception as e:
-                return f"Error during chat: {e}"
+                return {"status": 500, "content": f"Error during chat: {e}"}
 
             self.messages.append(response.message)
 
@@ -53,7 +53,7 @@ class Model:
                 except json.JSONDecodeError:
                     pass
                 
-                return response.message.content or "No response"
+                return {"status": 200, "content": response.message.content or "No response"}
 
             for tool_call in response.message.tool_calls:
                 result = self._execute_tool(tool_call)
@@ -62,7 +62,8 @@ class Model:
                     "content": result,
                     "tool_name": tool_call.function.name
                 })
-        return "Max iterations completed"
+
+        return {"status": 408, "content": "Max iterations completed"}
 
     def _execute_tool(self, tool_call) -> str:
         func_name = tool_call.function.name
