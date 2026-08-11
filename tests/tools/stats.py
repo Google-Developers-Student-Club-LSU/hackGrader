@@ -1,7 +1,7 @@
 import time, platform, psutil, GPUtil
 
-def benchmark_timing(func):
-    def wrapper(*args, **kwargs):
+def benchmark_timing(func) -> function:
+    def wrapper(*args, **kwargs) -> function:
         start_time = time.perf_counter()
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
@@ -14,15 +14,11 @@ def benchmark_timing(func):
     return wrapper
 
 
-def benchmark_stats(func):
-    def wrapper(*args, **kwargs):
+def benchmark_stats(func) -> function:
+    def wrapper(*args, **kwargs) -> function:
         post_print()
         memory = psutil.virtual_memory()
-        gpus = GPUtil.getGPUs()
-        if not gpus:
-            gpu = BlankGPU()
-        else:
-            gpu = gpus[0]
+        gpu = BlankGPU()
 
         stats = f"OS: {platform.platform()}\nCPU: {platform.processor()}\nGPU: {gpu.name}\nVRAM: {gpu.memoryTotal} GiB\nRAM: {round(memory.total / (1024**3), 2)} GiB"
         print(stats)
@@ -33,11 +29,14 @@ def benchmark_stats(func):
     return wrapper
 
 def post_print() -> None:
-    print("")
-    print("----------------------------------------------------------------------")
-    print("")
+    print("\n----------------------------------------------------------------------\n")
 
 class BlankGPU:
-    def __init__(self):
+    def __init__(self) -> None:
         self.name = "No GPU Detected"
         self.memoryTotal = 0
+
+        gpus = GPUtil.getGPUs()
+        if gpus:
+            self.name = gpus[0].name
+            self.memoryTotal = gpus[0].memoryTotal

@@ -1,15 +1,19 @@
 param (
-  [switch]$c = $false
-  [switch]$s = $false
-  [switch]$a = $true
+  [switch]$c,
+  [switch]$s
 )
 
-source .venv/bin/activate.ps1
-if ($c) {
-  python tests/test_crawling.py 
-} elseif ($s) {
-  python tests/test_scoring.py 
-} elseif ($a)
+. .venv/bin/activate.ps1
+
+if (-not $c -and -not $s) {
   python tests/test_pipeline.py 
+  exit
 }
 
+if ($c) {
+  python tests/test_crawling.py 
+} 
+
+if ($s) {
+  python tests/test_scoring.py 
+}

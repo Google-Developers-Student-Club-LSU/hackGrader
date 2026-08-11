@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 class Driver:
     def __init__(self) -> None:
         chromeOptions = Options()
-        chromeOptions.add_argument("--headless=new")
+        #chromeOptions.add_argument("--headless=new")
         chromeOptions.add_argument("--disable-gpu")
         chromeOptions.add_argument("--disable-renderer-backgrounding")
         chromeOptions.add_argument("--disable-background-timer-throttling")

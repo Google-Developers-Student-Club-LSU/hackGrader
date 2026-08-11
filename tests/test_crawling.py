@@ -8,7 +8,11 @@ class TestCrawling(unittest.TestCase):
     @benchmark_timing
     def test_crawling(self) -> None:
         url: str = "https://2026-wics-hackathon.devpost.com"
+        driver = imports.driver.Driver()
         crawl = imports.Crawler(url)
+
+        urls = crawl.get_projects(driver)
+        github = crawl.get_github_projects(urls, driver)
 
 if __name__ == "__main__":
     unittest.main()

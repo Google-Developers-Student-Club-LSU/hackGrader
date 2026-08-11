@@ -1,7 +1,13 @@
 #!/bin/bash
- 
+
 source .venv/bin/activate
-while getopts ":sc:" opt; do
+
+if [ $# -eq 0 ]; then
+  python tests/test_pipeline.py
+  exit 0
+fi
+
+while getopts ":sc" opt; do
   case $opt in
     s)
       python tests/test_scoring.py
@@ -13,9 +19,5 @@ while getopts ":sc:" opt; do
       echo "Invalid option: -$OPTARG" >&2
       exit 1
       ;;
-    :)
-      python tests/test_pipeline.py
-      ;;
   esac
 done
-
