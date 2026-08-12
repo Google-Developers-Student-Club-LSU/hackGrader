@@ -15,6 +15,9 @@ def read_repository(url: str) -> str:
         return "Invalid repo"
     owner, repo = parts[-2], parts[-1]
 
+    if repo.endswith('.git'):
+        repo = repo[:-4]
+
     try:
         api_url = f"https://api.github.com/repos/{owner}/{repo}"
         request = urllib.request.Request(api_url, headers={"User-Agent": "Ollama-Local-Agent"})

@@ -9,6 +9,7 @@ def benchmark_timing(func) -> function:
 
         post_print()
         print(f"Total execution time: {total_time:.4f} seconds")
+        post_print()
         return result 
         
     return wrapper

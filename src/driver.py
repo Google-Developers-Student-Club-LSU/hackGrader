@@ -1,15 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-import os, sys
-from dotenv import load_dotenv
+import sys
 
 class Driver:
     def __init__(self) -> None:
         chromeOptions = Options()
-        #chromeOptions.add_argument("--headless=new")
+        chromeOptions.add_argument("--headless=new")
         chromeOptions.add_argument("--disable-gpu")
         chromeOptions.add_argument("--disable-renderer-backgrounding")
         chromeOptions.add_argument("--disable-background-timer-throttling")

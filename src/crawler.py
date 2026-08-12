@@ -10,7 +10,6 @@ class Crawler:
         self.queue: list = list()
 
     def get_projects(self, webdriver: driver.Driver) -> list:
-        project: list = list() 
         projects: list = list()
         index: int = 1 
         next_page: bool = True
@@ -35,7 +34,7 @@ class Crawler:
         try:
             element = primary_driver.find_element(By.CSS_SELECTOR, "ul[data-role='software-urls'] a")
             url = element.get_attribute("href")
-            return url
+            return str(url)
         except:
             return ""
 

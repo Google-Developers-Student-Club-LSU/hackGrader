@@ -14,5 +14,7 @@ class TestCrawling(unittest.TestCase):
         urls = crawl.get_projects(driver)
         github = crawl.get_github_projects(urls, driver)
 
+        self.assertEqual(len(github) > 0, True, "Query failure")
+
 if __name__ == "__main__":
     unittest.main()

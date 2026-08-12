@@ -3,7 +3,7 @@
 source .venv/bin/activate
 
 if [ $# -eq 0 ]; then
-  python tests/test_pipeline.py
+  python tests/test_pipeline.py > log.txt
   exit 0
 fi
 
