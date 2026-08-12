@@ -9,13 +9,26 @@ class Model:
         self.model: str = "qwen2.5-coder:7b"
         self.tools: dict = {"read_repository": read_repository}
         self.messages: list = []
-        self.max_iterations: int = 10
+        self.max_iterations: int = 20
         
 
     def query(self, question: str) -> dict:
         self.messages = [
-                    {"role": "system", "content": "You are a senior code reviewer. You must use the read_repository tool ONCE to read the codebase. After reading the code, you MUST immediately output a numeric percent score and explanation. Do not call the tool more than once."},
-                    {"role": "user", "content": question}
+                    {
+                        "role": "system", 
+                         "content": (
+                            "You are an expert senior code reviewer. You must follow this strict two-step process:"
+                            "STEP 1: You MUST use the `read_repository` tool exactly ONCE to fetch the codebase."
+                            "STEP 2: Once you receive the tool's output, you are STRICTLY FORBIDDEN from calling ANY tools again."
+                            "You must immediately output your final response, which must include a numeric percent score (0-100)"
+                            "and a detailed explanation of the code quality based on the provided text."
+                            "Do not attempt to paginate, re-read, or fetch more data."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": question
+                    }
                 ]
         for _ in range(self.max_iterations):
             try:

@@ -13,7 +13,8 @@ class TestPipeline(unittest.TestCase):
         github_projects: list = crawler.get_github_projects(projects, driver)
 
         for project in github_projects:
-            self.individual_query(project)
+            with self.subTest(project_url=project):
+                self.individual_query(project)
 
     @benchmark_timing
     def individual_query(self, url: str) -> None:
