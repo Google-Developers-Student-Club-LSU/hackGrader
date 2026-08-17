@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.remote.webdriver import WebDriver
 import sys
 
 class Driver:
@@ -16,18 +17,18 @@ class Driver:
         chromeOptions.add_argument("--no-sandbox")
 
         if (sys.platform.startswith("linux")):
-            self.driver = self.linuxWebdriver(chromeOptions)
-        self.driver = webdriver.Chrome(options=chromeOptions)
+            self.driver: WebDriver | None = self.linuxWebdriver(chromeOptions)
+        self.driver: WebDriver | None = webdriver.Chrome(options=chromeOptions)
 
-    def linuxWebdriver(self, chromeOptions) -> webdriver:
+    def linuxWebdriver(self, chromeOptions) -> None:
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chromeOptions)
 
     def connectUrl(self, url: str) -> bool:
         try:
-            self.driver.get(url)
+            self.driver.get(url) # type: ignore
             return True
         except:
             return False
 
     def terminate(self) -> None:
-        self.driver.quit()
+        self.driver.quit() # type: ignore
