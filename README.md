@@ -6,6 +6,8 @@ Hackathon scraper and code grader
 
 ---
 
+</div>
+
 ## Getting Started
 
 ### Prerequisites
@@ -99,5 +101,3 @@ if no flags are provided, then the entire pipeline will be tested.
 # example script execution
 ./run_test -c
 ```
-
-</div>
