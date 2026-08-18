@@ -2,19 +2,23 @@
 
 # HackGrader
 
+</div>
+
 Hackathon scraper and code grader
 
 ---
-
-</div>
 
 ## Getting Started
 
 ### Prerequisites
 
+---
+
 The project spins up and hosts a model locally for the analysis phase. Ensure that you have [ollama](https://ollama.com/) installed as well as the [qwen2.5-coder](https://ollama.com/library/qwen2.5-coder) model pulled. Additionally, you will need either [uv](https://github.com/astral-sh/uv) or pip to install packages for the scraper. The code is built around [python](https://www.python.org/) versions ```>=3.14```.
 
 ### Installation
+
+---
 
 Pull the code locally
 
@@ -33,6 +37,8 @@ ollama pull qwen2.5-coder:7b
 ```
 
 #### Standard
+
+---
 
 Create your virtual environment
 
@@ -62,6 +68,8 @@ pip install -r requirements.txt
 
 #### UV
 
+---
+
 Create the virtual environment
 
 ```bash
@@ -76,6 +84,8 @@ uv sync
 
 ### Running
 
+---
+
 Run the pipeline with the devpost url
 
 ```bash
@@ -88,12 +98,11 @@ uv run https://example.devpost.com
 
 ### Testing
 
-Testing the crawling, scoring, or entire pipeline can be done entirely through the test scripts - run_test.ps1 or run_test.sh
+Testing the crawling, scoring, or entire pipeline can be done entirely through the test scripts
+The following flags may be used to test various components.
 
-flags:
-
-- c : crawling
-- s : scoring
+- -c : devpost crawling testing
+- -s : llm scoring testing
 
 if no flags are provided, then the entire pipeline will be tested.
 
