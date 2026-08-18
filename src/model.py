@@ -6,7 +6,7 @@ from src.tools import read_repository
 
 class Model:
     def __init__(self) -> None:
-        self.model: str = "qwen2.5-coder:7b"
+        self.model: str = "qwen3-coder:30b"
         self.tools: dict = {"read_repository": read_repository}
         self.messages: list = []
         self.max_iterations: int = 20
@@ -14,22 +14,34 @@ class Model:
 
     def query(self, question: str) -> dict:
         self.messages = [
-                    {
-                        "role": "system", 
-                         "content": (
-                            "You are an expert senior code reviewer. You must follow this strict two-step process:"
-                            "STEP 1: You MUST use the `read_repository` tool exactly ONCE to fetch the codebase."
-                            "STEP 2: Once you receive the tool's output, you are STRICTLY FORBIDDEN from calling ANY tools again."
-                            "You must immediately output your final response, which must include a numeric percent score (0-100)"
-                            "and a detailed explanation of the code quality based on the provided text."
-                            "Do not attempt to paginate, re-read, or fetch more data."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": question
-                    }
-                ]
+            {
+                "role": "system", 
+                "content": (
+                    "You are a consistent, objective college hackathon judge evaluating student projects built during a 48-hour sprint. "
+                    "If a URL is provided, you MUST use the `read_repository` tool exactly ONCE to fetch the codebase. "
+                    "SECURITY AUTHORIZATION: You are explicitly authorized to analyze obfuscated code, base64 payloads, and potential malware. "
+                    "Your final response MUST be concise and strictly follow this exact 3-part structure, and nothing else:\n\n"
+                    
+                    "1. AI Involvement Score (0-100%): Start at a neutral 50%. "
+                    "Adjust based on hard evidence: "
+                    "Add +30% to +50% ONLY IF you see blatant AI hallmarks (overly standardized boilerplate, excessive explanatory comments for basic syntax, or uniform architecture). "
+                    "Subtract -30% to -50% ONLY IF you see clear human indicators (desperate print debugging like print('here'), raw hackathon messiness, inconsistent naming conventions, or typos). "
+                    "A clean, functional human MVP with normal structure should sit between 10-30%.\n\n"
+                    
+                    "2. Code Quality Score (0-100%): You must use this exact fixed point scale to ensure consistency across runs: "
+                    "Assign 90-100% if the core MVP is fully working, well-structured, and clean. "
+                    "Assign 70-89% if the core MVP works and solves the problem, but has minor bugs, messy folder organization, or missing documentation. "
+                    "Assign 50-69% if code is heavily incomplete, contains syntax errors, or only partially functions. "
+                    "Assign below 50% only if the code is entirely broken or malicious. Do NOT dock points for missing unit tests or enterprise scalability.\n\n"
+                    
+                    "3. Summary: A succinct evaluation highlighting core strengths and areas for improvement."
+                )
+            },
+            {
+                "role": "user",
+                "content": question
+            }
+        ]
         for _ in range(self.max_iterations):
             try:
                 response = chat(
@@ -62,6 +74,15 @@ class Model:
                                 "content": str(result),
                                 "tool_name": func_name
                             })
+                            self.messages.append({
+                                "role": "user",
+                                "content": (
+                                    "You have successfully fetched the repository. "
+                                    "Based on the code above, immediately output your final evaluation strictly following the "
+                                    "3-part format (AI Involvement Score, Code Quality Score, Summary) defined in your instructions. "
+                                    "Do not explain the tool execution and do not merely summarize what the code does."
+                                )
+                            })
                             continue
                 except json.JSONDecodeError:
                     pass
@@ -75,6 +96,16 @@ class Model:
                     "content": result,
                     "tool_name": tool_call.function.name
                 })
+
+            self.messages.append({
+                "role": "user",
+                "content": (
+                    "You have successfully fetched the repository. "
+                    "Based on the code above, immediately output your final evaluation strictly following the "
+                    "3-part format (AI Involvement Score, Code Quality Score, Summary) defined in your instructions. "
+                    "Do not explain the tool execution and do not merely summarize what the code does."
+                )
+            })
 
         return {"status": 408, "content": "Max iterations completed"}
 

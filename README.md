@@ -2,9 +2,9 @@
 
 # HackGrader
 
-</div>
+Hackathon devpost webscraper and code grader/checker pipeline. This aims to check for AI usage, code correctness, format and other parameters that will be used to create an additional metric towards participants scores.
 
-Hackathon scraper and code grader
+</div>
 
 ---
 
@@ -36,7 +36,7 @@ Install the qwen2.5-coder model
 ollama pull qwen2.5-coder:7b
 ```
 
-#### Standard
+#### Python pip
 
 ---
 
@@ -86,7 +86,7 @@ uv sync
 
 ---
 
-Run the pipeline with the devpost url
+Run the pipeline with and pass in a devpost url as an argument for the script.
 
 ```bash
 # standard run
@@ -97,6 +97,8 @@ uv run https://example.devpost.com
 ```
 
 ### Testing
+
+---
 
 Testing the crawling, scoring, or entire pipeline can be done entirely through the test scripts
 The following flags may be used to test various components.

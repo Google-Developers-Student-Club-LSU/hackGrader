@@ -18,7 +18,7 @@ class TestPipeline(unittest.TestCase):
 
     @benchmark_timing
     def individual_query(self, url: str) -> None:
-        question: str = f"look at this repository and give it a percent numeric score and explanation for such based on how good the code is: {url}"
+        question: str = f"Please provide a concise code review for the following url that includes two percentage scores: The estimated percentage of AI involvement in generating the code. A code goodness score based on the following criteria: cleanliness, readability, functionality, maintainability, scalability, and documentation.Summarize your evaluation clearly and succinctly, highlighting the strengths and areas for improvement in the code. {url}"
         grader = imports.Model()
         answer = grader.query(question)
 

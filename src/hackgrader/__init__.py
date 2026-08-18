@@ -1,4 +1,4 @@
-import sys
+import sys, json
 
 from crawler import Crawler
 from driver import Driver
@@ -18,9 +18,16 @@ def main() -> None:
         individual_query(project)
 
 def individual_query(url: str) -> None:
-    question: str = f"look at this repository and give it a percent numeric score and explanation for such based on how good the code is: {url}"
+    question: str = f"Please review the hackathon repository at the following URL: {url}. Provide your evaluation including the two percentage scores and the concise summary of strengths and weaknesses as instructed."
     grader = Model()
     answer = grader.query(question)
+    parts = url.rstrip('/').split('/')
+    if len(parts) < 2:
+        return "Invalid repo"
+    owner = parts[-2]
+    data = {owner: answer}
+    with open("scores.json", 'w', encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     main()
