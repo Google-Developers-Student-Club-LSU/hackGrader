@@ -1,11 +1,13 @@
-import urllib.request
-import json
+import asyncio, aiohttp
 
 def read_repository(url: str) -> str:
     """
+    Synchronous wrapper that starts the async event loop without breaking model.py.
     Recursively fetches all the source code files from a GitHub repository URL.
     """
+    return asyncio.run(_async_read_repository(url))
 
+async def _async_read_repository(url: str) -> str:
     max_chars: int = 40000
     current_chars: int = 0
     output: str = ""
@@ -18,33 +20,51 @@ def read_repository(url: str) -> str:
     if repo.endswith('.git'):
         repo = repo[:-4]
 
+    timeout = aiohttp.ClientTimeout(total=None, sock_connect=60, sock_read=60)
+    semaphore = asyncio.Semaphore(10)
+
+    async def fetch_with_retry(session, fetch_url, is_json=False):
+        while True:
+            try:
+                async with semaphore:
+                    async with session.get(fetch_url) as response:
+                        if response.status in (403, 429):
+                            await asyncio.sleep(5)
+                            continue
+                            
+                        response.raise_for_status()
+                        if is_json:
+                            return await response.json()
+                        else:
+                            return await response.text(errors="ignore")
+                            
+            except (aiohttp.ClientError, asyncio.TimeoutError):
+                await asyncio.sleep(3)
+
     try:
-        api_url = f"https://api.github.com/repos/{owner}/{repo}"
-        request = urllib.request.Request(api_url, headers={"User-Agent": "Ollama-Local-Agent"})
-        with urllib.request.urlopen(request) as response:
-            repo_data = json.loads(response.read().decode())
+        async with aiohttp.ClientSession(headers={"User-Agent": "Ollama-Local-Agent"}, timeout=timeout) as session:
+            api_url = f"https://api.github.com/repos/{owner}/{repo}"
+            repo_data = await fetch_with_retry(session, api_url, is_json=True)
             branch = repo_data.get("default_branch", "main")
 
-        tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1"
-        request = urllib.request.Request(tree_url, headers={"User-Agent": "Ollama-Local-Agent"})
-        with urllib.request.urlopen(request) as response:
-            tree_data = json.loads(response.read().decode())
+            tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1"
+            tree_data = await fetch_with_retry(session, tree_url, is_json=True)
 
-        files = [item for item in tree_data.get("tree", []) if item.get("type") == "blob"]
-        for file in files:
-            file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{file['path']}"
-            request = urllib.request.Request(file_url, headers={"User-Agent": "Ollama-Local-Agent"})
-            try:
-                with urllib.request.urlopen(request) as response:
-                    content = response.read().decode("utf-8", errors="ignore")
+            files = [item for item in tree_data.get("tree", []) if item.get("type") == "blob"]
+            
+            tasks = []
+            for file in files:
+                file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{file['path']}"
+                tasks.append(fetch_with_retry(session, file_url, is_json=False))
 
-                    if current_chars + len(content) > max_chars:
-                        break
-
-                    output += content
-                    current_chars += len(content)
-            except Exception as e:
-                output += f"Error reading: {e}"
+            for future in asyncio.as_completed(tasks):
+                content = await future
+                
+                if current_chars + len(content) > max_chars:
+                    break
+                    
+                output += content
+                current_chars += len(content)    
 
         return output
 
