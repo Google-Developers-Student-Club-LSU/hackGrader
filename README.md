@@ -100,13 +100,14 @@ uv run https://example.devpost.com
 
 ---
 
-Testing the crawling, scoring, or entire pipeline can be done entirely through the test scripts
+Testing the crawling, scoring, or entire pipeline can be done entirely through the test scripts.
+
 The following flags may be used to test various components.
 
 - -c : devpost crawling testing
 - -s : llm scoring testing
 
-if no flags are provided, then the entire pipeline will be tested.
+If no flags are provided, then the entire pipeline will be tested.
 
 ```bash
 # example script execution

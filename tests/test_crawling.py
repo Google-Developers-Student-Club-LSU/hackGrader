@@ -1,18 +1,18 @@
 import unittest
-import imports
 
 from tests.tools.stats import benchmark_timing, benchmark_stats
+from imports import Driver, Crawler
 
 class TestCrawling(unittest.TestCase):
     @benchmark_stats
     @benchmark_timing
     def test_crawling(self) -> None:
         url: str = "https://2026-wics-hackathon.devpost.com"
-        driver = imports.driver.Driver()
-        crawl = imports.Crawler(url)
+        driver: Driver = Driver()
+        crawl: Crawler = Crawler(url)
 
-        urls = crawl.get_projects(driver)
-        github = crawl.get_github_projects(urls, driver)
+        urls: list = crawl.get_projects(driver)
+        github: list = crawl.get_github_projects(urls, driver)
 
         self.assertEqual(len(github) > 0, True, "Query failure")
 

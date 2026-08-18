@@ -1,6 +1,6 @@
 import unittest
-import imports
 
+from imports import Model
 from tests.tools.stats import benchmark_timing, benchmark_stats
 
 class TestScoring(unittest.TestCase):
@@ -11,8 +11,8 @@ class TestScoring(unittest.TestCase):
         repo: str = "https://github.com/rexim/aoc-2023" # this repo has no ai involvement
         question: str = f"look at this repository and give it a percent numeric score based on how good the code is: {repo}"
     
-        grader = imports.Model()
-        answer = grader.query(question)
+        grader: Model = Model()
+        answer: dict = grader.query(question)
 
         print(answer['content'])
         self.assertEqual(answer["status"], 200, "Query failure")

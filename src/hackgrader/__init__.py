@@ -17,7 +17,7 @@ def main() -> None:
     for project in github_projects:
         individual_query(project)
 
-def individual_query(url: str) -> None:
+def individual_query(url: str) -> str | None:
     question: str = f"Please review the hackathon repository at the following URL: {url}. Provide your evaluation including the two percentage scores and the concise summary of strengths and weaknesses as instructed."
     grader = Model()
     answer = grader.query(question)

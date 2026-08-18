@@ -56,7 +56,7 @@ class Model:
             self.messages.append(response.message)
 
             if not response.message.tool_calls:
-                content = response.message.content.strip()
+                content = response.message.content.strip() if response.message.content else ""
 
                 if content.startswith("```"):
                     content = content.replace("```json", "").replace("```", "").strip()

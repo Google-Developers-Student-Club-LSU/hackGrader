@@ -1,11 +1,12 @@
+from typing import Callable
 import time, platform, psutil, GPUtil
 
-def benchmark_timing(func) -> function:
-    def wrapper(*args, **kwargs) -> function:
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
+def benchmark_timing[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        start_time: float = time.perf_counter()
+        result: R = func(*args, **kwargs)
+        end_time: float = time.perf_counter()
+        total_time: float = end_time - start_time
 
         post_print()
         print(f"Total execution time: {total_time:.4f} seconds")
@@ -15,13 +16,13 @@ def benchmark_timing(func) -> function:
     return wrapper
 
 
-def benchmark_stats(func) -> function:
-    def wrapper(*args, **kwargs) -> function:
+def benchmark_stats[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         post_print()
         memory = psutil.virtual_memory()
         gpu = BlankGPU()
 
-        stats = f"OS: {platform.platform()}\nCPU: {platform.processor()}\nGPU: {gpu.name}\nVRAM: {gpu.memoryTotal} GiB\nRAM: {round(memory.total / (1024**3), 2)} GiB"
+        stats = f"OS: {platform.platform()}\nCPU: {platform.processor()}\nGPU: {gpu.name}\nVRAM: {gpu.memoryTotal} MiB\nRAM: {round(memory.total / (1024**3), 2)} GiB"
         print(stats)
         post_print()
 
@@ -34,8 +35,8 @@ def post_print() -> None:
 
 class BlankGPU:
     def __init__(self) -> None:
-        self.name = "No GPU Detected"
-        self.memoryTotal = 0
+        self.name: str = "No GPU Detected"
+        self.memoryTotal: int = 0
 
         gpus = GPUtil.getGPUs()
         if gpus:
