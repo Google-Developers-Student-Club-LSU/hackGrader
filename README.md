@@ -93,7 +93,7 @@ Run the pipeline with and pass in a devpost url as an argument for the script.
 python src/hackGrader/__init__.py https://example.devpost.com
 
 # uv run
-uv run https://example.devpost.com
+uv run hackgrader https://example.devpost.com
 ```
 
 ### Testing
